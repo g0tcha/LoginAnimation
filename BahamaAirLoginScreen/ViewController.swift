@@ -51,6 +51,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
   let status = UIImageView(image: UIImage(named: "banner"))
   let label = UILabel()
   let messages = ["Connecting ...", "Authorizing ...", "Sending credentials ...", "Failed"]
+    var statusPosition = CGPoint.zero
   
   // MARK: view controller methods
   override func viewDidLoad() {
@@ -74,6 +75,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
     label.textColor = UIColor(red: 0.89, green: 0.38, blue: 0.0, alpha: 1.0)
     label.textAlignment = .Center
     status.addSubview(label)
+    
+    statusPosition = status.center
     
     initCloudsAlpha()
   }
@@ -133,6 +136,33 @@ class ViewController: UIViewController, UITextFieldDelegate {
             delay += 0.4
         }
     }
+    
+    func showMessage(index index: Int) {
+        label.text = messages[index]
+        
+        UIView.transitionWithView(status, duration: 0.33, options: [.CurveEaseOut, .TransitionCurlDown], animations: {
+            self.status.hidden = false
+            }) { _ in
+                delay(seconds: 2.0, completion: {
+                    if index < self.messages.count - 1 {
+                        self.removeMessage(index: index)
+                    } else {
+                        // reset form
+                    }
+                })
+        }
+    }
+    
+    func removeMessage(index index: Int) {
+        UIView.animateWithDuration(0.33, delay: 0.0, options: [], animations: {
+            self.status.center.x += self.view.frame.size.width
+            }) { _ in
+                self.status.hidden = true
+                self.status.center = self.statusPosition
+                
+                self.showMessage(index: index + 1)
+        }
+    }
   
   // MARK: IBActions
   @IBAction func login() {
@@ -140,7 +170,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     UIView.animateWithDuration(1.5, delay: 0.0, usingSpringWithDamping: 0.2, initialSpringVelocity: 0.0, options: [], animations: {
         self.loginButton.bounds.size.width += 80.0
-        }, completion: nil)
+        }, completion:  {_ in
+        self.showMessage(index: 0)
+    })
     
     UIView.animateWithDuration(0.33, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.0, options: [], animations: {
         self.loginButton.center.y += 60.0
