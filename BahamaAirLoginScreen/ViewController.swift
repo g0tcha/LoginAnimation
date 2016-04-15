@@ -85,6 +85,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
     username.center.x -= view.bounds.width
     password.center.x -= view.bounds.width
     
+    loginButton.center.y += 30.0
+    loginButton.alpha = 0.0
   }
   
   override func viewDidAppear(animated: Bool) {
@@ -92,6 +94,11 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     animateTitleAndForm()
     animateClouds()
+    
+    UIView.animateWithDuration(0.5, delay: 0.5, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.0, options: [], animations: {
+        self.loginButton.center.y -= 30.0
+        self.loginButton.alpha = 1.0
+    }, completion: nil)
   }
     
     // MARK: - Helpers Methods
@@ -100,11 +107,11 @@ class ViewController: UIViewController, UITextFieldDelegate {
             self.heading.center.x += self.view.bounds.width
         }
         
-        UIView.animateWithDuration(0.5, delay: 0.3, options: [], animations: {
+        UIView.animateWithDuration(0.5, delay: 0.3, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [], animations: {
             self.username.center.x += self.view.bounds.width
             }, completion: nil)
         
-        UIView.animateWithDuration(0.5, delay: 0.4, options: [], animations: {
+        UIView.animateWithDuration(0.5, delay: 0.4, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.0, options: [], animations: {
             self.password.center.x += self.view.bounds.width
             }, completion: nil)
     }
@@ -130,6 +137,17 @@ class ViewController: UIViewController, UITextFieldDelegate {
   // MARK: IBActions
   @IBAction func login() {
     view.endEditing(true)
+    
+    UIView.animateWithDuration(1.5, delay: 0.0, usingSpringWithDamping: 0.2, initialSpringVelocity: 0.0, options: [], animations: {
+        self.loginButton.bounds.size.width += 80.0
+        }, completion: nil)
+    
+    UIView.animateWithDuration(0.33, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.0, options: [], animations: {
+        self.loginButton.center.y += 60.0
+        self.loginButton.backgroundColor = UIColor(red: 0.85, green: 0.83, blue: 0.45, alpha: 1.0)
+        self.spinner.center = CGPoint(x: 40.0, y: self.loginButton.frame.size.height / 2)
+        self.spinner.alpha = 1.0
+        }, completion: nil)
     
   }
   
