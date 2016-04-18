@@ -52,10 +52,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
   let label = UILabel()
   let messages = ["Connecting ...", "Authorizing ...", "Sending credentials ...", "Failed"]
     var statusPosition = CGPoint.zero
+    var cloudSpeed: Float!
   
   // MARK: view controller methods
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    cloudSpeed = 60.0 / Float(view.frame.size.width)
     
     //set up the UI
     loginButton.layer.cornerRadius = 8.0
@@ -78,7 +81,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     statusPosition = status.center
     
-    initCloudsAlpha()
+    //initCloudsAlpha()
   }
   
   override func viewWillAppear(animated: Bool) {
@@ -96,7 +99,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
     super.viewDidAppear(animated)
     
     animateTitleAndForm()
-    animateClouds()
+    animateCloud(cloud1)
+    animateCloud(cloud2)
+    animateCloud(cloud3)
+    animateCloud(cloud4)
     
     UIView.animateWithDuration(0.5, delay: 0.5, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.0, options: [], animations: {
         self.loginButton.center.y -= 30.0
@@ -105,6 +111,33 @@ class ViewController: UIViewController, UITextFieldDelegate {
   }
     
     // MARK: - Helpers Methods
+    func animateCloud(cloud: UIImageView) {
+        let duration = Float((view.frame.size.width - cloud.frame.origin.x)) * cloudSpeed
+        
+        UIView.animateWithDuration(NSTimeInterval(duration), delay: 0.0, options: [.CurveLinear], animations: {
+            cloud.frame.origin.x = self.view.frame.size.width
+            }) { _ in
+                cloud.frame.origin.x = -cloud.frame.size.width
+                self.animateCloud(cloud)
+        }
+    }
+    
+    func resetForm() {
+        UIView.animateWithDuration(0.2, delay: 0.0, options: [.TransitionFlipFromTop], animations: {
+            self.status.hidden = true
+            self.status.center = self.statusPosition
+            }, completion: nil)
+        
+        UIView.animateWithDuration(0.2, delay: 0.0, options: [], animations: {
+            self.spinner.center.x = -20.0
+            self.spinner.center.y = 16.0
+            self.spinner.alpha = 0.0
+            self.loginButton.backgroundColor = UIColor(red: 0.63, green: 0.84, blue: 0.35, alpha: 1.0)
+            self.loginButton.bounds.size.width -= 80.0
+            self.loginButton.center.y -= 60.0
+            }, completion: nil)
+    }
+    
     func animateTitleAndForm() {
         UIView.animateWithDuration(0.5) {
             self.heading.center.x += self.view.bounds.width
@@ -119,35 +152,35 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }, completion: nil)
     }
     
-    func initCloudsAlpha() {
-        for cloud in clouds {
-            cloud.alpha = 0
-        }
-    }
-    
-    func animateClouds() {
-        var delay: NSTimeInterval = 0.5
-        
-        for cloud in clouds {
-            UIView.animateWithDuration(0.9, delay: delay, options: [.Repeat, .Autoreverse], animations: {
-                cloud.alpha = 1
-            }, completion: nil)
-            
-            delay += 0.4
-        }
-    }
+//    func initCloudsAlpha() {
+//        for cloud in clouds {
+//            cloud.alpha = 0
+//        }
+//    }
+//    
+//    func animateClouds() {
+//        var delay: NSTimeInterval = 0.5
+//        
+//        for cloud in clouds {
+//            UIView.animateWithDuration(0.9, delay: delay, options: [.Repeat, .Autoreverse], animations: {
+//                cloud.alpha = 1
+//            }, completion: nil)
+//            
+//            delay += 0.4
+//        }
+//    }
     
     func showMessage(index index: Int) {
         label.text = messages[index]
         
-        UIView.transitionWithView(status, duration: 0.33, options: [.CurveEaseOut, .TransitionCurlDown], animations: {
+        UIView.transitionWithView(status, duration: 0.33, options: [.CurveEaseOut, .TransitionFlipFromBottom], animations: {
             self.status.hidden = false
             }) { _ in
                 delay(seconds: 2.0, completion: {
                     if index < self.messages.count - 1 {
                         self.removeMessage(index: index)
                     } else {
-                        // reset form
+                        self.resetForm()
                     }
                 })
         }
